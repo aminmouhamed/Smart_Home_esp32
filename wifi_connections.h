@@ -44,8 +44,11 @@ void startServer(){ // functions to start tcp server . -------------------------
     {
       Serial.println("Client Connected");
     }
+
     
-    while(client.connected()){   
+    if(client.connected() != 0 ){   
+      delay(1000);
+        client.write('h');
       delay(1000) ;   
       while(client.available()>0){
         // read data from the connected client
@@ -54,7 +57,7 @@ void startServer(){ // functions to start tcp server . -------------------------
       }
        delay(1000);
         client.write('o');
-   delay(1000);
+        delay(1000);
       
        while(client.available()>0){
         // read data from the connected client
