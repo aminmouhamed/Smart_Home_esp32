@@ -37,26 +37,58 @@ class Room{
   String RoomName = ""; 
   uint8_t* WindowPin = NULL ;
   uint8_t* LampPin = NULL ;
+  uint8_t* DorPin = NULL ;
   uint8_t* GazePin = NULL ;
   
   void chek() ;
   void GetData() ;
   void SetData(float temp) ;
+  void SetHistory() ;
   bool swap(bool state) ;
   void OpenWindowIf(int smoke) ;
   private :
 
 };
 
+
+
+void Room::SetHistory(){
+/*
+ if (Firebase.ready() && !taskCompleted)
+  {
+    if (Firebase.RTDB.setFloat(&fbdo,"Bedroom/temp", temp)) {
+    //Serial.println("PASSED");
+    //Serial.println("PATH: " + fbdo.dataPath());
+   // Serial.println("TYPE: " + fbdo.dataType());
+    }
+    else {
+      Serial.println("FAILED");
+      Serial.println("REASON: " + fbdo.errorReason());
+    }
+  
+    if (Firebase.RTDB.setInt(&fbdo,"Bedroom/smoke", analogRead(*GazePin))) {
+     
+
+    }
+    else {
+      Serial.println("FAILED");
+      Serial.println("REASON: " + fbdo.errorReason());
+    }
+  }
+
+*/
+}
+
 void Room::chek(){
   if (RoomName == ""){
     Serial.println("Room name is null !! .") ;
   }else
   {
-    if(this->LampPin != NULL && this->WindowPin != NULL && this->GazePin != NULL){
+    if(this->LampPin != NULL && this->WindowPin != NULL && this->GazePin != NULL && DorPin != NULL){
       Serial.println("pin confirations is don ! ") ;
       pinMode(*LampPin , OUTPUT) ;
       pinMode(*WindowPin , OUTPUT) ;
+      pinMode(*DorPin , OUTPUT) ;
      
     }
     else{
@@ -77,9 +109,10 @@ bool Room::swap(bool state){ // this functions to swap values from true to false
 }
 
 void Room::GetData(){ // that functions to get data from firebase an control the lamp and window
-  //Serial.println("Getdata .....");
-  if (Firebase.ready() && !taskCompleted)
+  
+  if (Firebase.ready() && !taskCompleted) /// check if firebase is redy !.
   {
+    //// /// /// ///    => Get value of light_baulb from firebase . 
      if (Firebase.RTDB.getBool(&fbdo,"Bedroom/light_baulb")) {
         if (fbdo.dataType() == "boolean") {
           bool BoolValue = fbdo.boolData();
@@ -91,7 +124,7 @@ void Room::GetData(){ // that functions to get data from firebase an control the
     else {
       Serial.println(fbdo.errorReason());
     }
-  
+      ///// ///         /// => Get value of window from firebase .
      if (Firebase.RTDB.getBool(&fbdo,"Bedroom/window")) {
         if (fbdo.dataType() == "boolean") {
           bool BoolValue = fbdo.boolData();
@@ -103,6 +136,20 @@ void Room::GetData(){ // that functions to get data from firebase an control the
     else {
       Serial.println(fbdo.errorReason());
     }
+      /// ///// //// =>  Get value of dor from firebase .
+     if (Firebase.RTDB.getBool(&fbdo,"Bedroom/Door")) {
+        if (fbdo.dataType() == "boolean") {
+          bool BoolValue = fbdo.boolData();
+          //Serial.println(*LampPin);
+          //Serial.println(BoolValue);
+          digitalWrite(*DorPin, swap(BoolValue));
+        }
+    }
+    else {
+      Serial.println(fbdo.errorReason());
+    }
+
+
   }else{
     Serial.println("firebase not redy !");
     }
@@ -135,7 +182,19 @@ void Room::SetData(float temp){
          Serial.println("FAILED");
             Serial.println(fbdo.errorReason());
     }
-      }
+      }else{
+         digitalWrite(*WindowPin, swap(false));
+       if (Firebase.RTDB.setBool(&fbdo,"Bedroom/window" , false)) {
+       
+       
+         }
+       else {
+         Serial.println("FAILED");
+            Serial.println(fbdo.errorReason());
+    }
+        
+        
+        }
     }
     else {
       Serial.println("FAILED");

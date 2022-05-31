@@ -8,7 +8,7 @@ Room Bedroom ;
 uint8_t Lamppin = 17 ;
 uint8_t window = 16 ;
 uint8_t gazpin = 32 ;
-
+uint8_t dorpin = 5 ;
 int conter = 50 ;
 
 
@@ -36,6 +36,8 @@ void mmain(){ // function contain all the code after connections secsess -------
 
 void setup() {
   Serial.begin(115200) ;
+  pinMode(18 , OUTPUT) ;
+  pinMode(19 , OUTPUT) ;
   delay(10) ;
   dht.begin();
   setupWifi() ;
@@ -44,6 +46,7 @@ void setup() {
   Bedroom.LampPin = &Lamppin ;
   Bedroom.WindowPin = &window ; 
   Bedroom.GazePin = &gazpin ;
+  Bedroom.DorPin = &dorpin ;
   Bedroom.chek() ;
   SetupFireBase() ;
 }
@@ -53,7 +56,9 @@ void setup() {
 void loop() {
 
   if ((WiFi.status() == WL_CONNECTED)) // test wifi status if is conected to any wifi 
-  {
+  { 
+      digitalWrite(18, true);
+      digitalWrite(19, false);
       mmain() ; 
   }
   else
@@ -69,7 +74,8 @@ void loop() {
   {
     Serial.println("Connection Status Negative / D15 HIGH");
     Serial.println("Turning the HotSpot On");
-    
+    digitalWrite(19, true);
+    digitalWrite(18, false);
     startAf();// Setup HotSpot
   }
 
