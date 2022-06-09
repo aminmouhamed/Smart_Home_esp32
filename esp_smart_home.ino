@@ -8,11 +8,14 @@ Room Bedroom ;
 uint8_t Lamppin = 17 ;
 uint8_t window = 16 ;
 uint8_t gazpin = 32 ;
-uint8_t dorpin = 5 ;
+uint8_t doorpin = 5 ;
+uint8_t alarmepin = 23 ;
+#define DHTPIN 4 
+
 int conter = 50 ;
 
 
-#define DHTPIN 4 
+
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -46,7 +49,8 @@ void setup() {
   Bedroom.LampPin = &Lamppin ;
   Bedroom.WindowPin = &window ; 
   Bedroom.GazePin = &gazpin ;
-  Bedroom.DorPin = &dorpin ;
+  Bedroom.DoorPin = &doorpin ;
+  Bedroom.AlarmePin = &alarmepin ;
   Bedroom.chek() ;
   SetupFireBase() ;
 }

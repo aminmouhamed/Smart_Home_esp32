@@ -37,8 +37,9 @@ class Room{
   String RoomName = ""; 
   uint8_t* WindowPin = NULL ;
   uint8_t* LampPin = NULL ;
-  uint8_t* DorPin = NULL ;
+  uint8_t* DoorPin = NULL ;
   uint8_t* GazePin = NULL ;
+  uint8_t* AlarmePin = NULL ;
   
   void chek() ;
   void GetData() ;
@@ -84,11 +85,14 @@ void Room::chek(){
     Serial.println("Room name is null !! .") ;
   }else
   {
-    if(this->LampPin != NULL && this->WindowPin != NULL && this->GazePin != NULL && DorPin != NULL){
+    if(this->LampPin != NULL && this->WindowPin != NULL && this->GazePin != NULL && DoorPin != NULL && AlarmePin != NULL){
       Serial.println("pin confirations is don ! ") ;
       pinMode(*LampPin , OUTPUT) ;
       pinMode(*WindowPin , OUTPUT) ;
-      pinMode(*DorPin , OUTPUT) ;
+      pinMode(*DoorPin , OUTPUT) ;
+      pinMode(*AlarmePin , OUTPUT) ;
+      delay(10) ;
+      digitalWrite(*AlarmePin, swap(false));
      
     }
     else{
@@ -142,7 +146,7 @@ void Room::GetData(){ // that functions to get data from firebase an control the
           bool BoolValue = fbdo.boolData();
           //Serial.println(*LampPin);
           //Serial.println(BoolValue);
-          digitalWrite(*DorPin, swap(BoolValue));
+          digitalWrite(*DoorPin, swap(BoolValue));
         }
     }
     else {
@@ -174,6 +178,7 @@ void Room::SetData(float temp){
     if (Firebase.RTDB.setInt(&fbdo,"Bedroom/smoke", analogRead(*GazePin))) {
       if(analogRead(*GazePin) >= 1000 ){
       digitalWrite(*WindowPin, swap(true));
+      digitalWrite(*AlarmePin, swap(true));
        if (Firebase.RTDB.setBool(&fbdo,"Bedroom/window" , true)) {
        
        
@@ -183,17 +188,9 @@ void Room::SetData(float temp){
             Serial.println(fbdo.errorReason());
     }
       }else{
-         digitalWrite(*WindowPin, swap(false));
-       if (Firebase.RTDB.setBool(&fbdo,"Bedroom/window" , false)) {
-       
-       
-         }
-       else {
-         Serial.println("FAILED");
-            Serial.println(fbdo.errorReason());
-    }
-        
-        
+       //  digitalWrite(*WindowPin, swap(false));
+     digitalWrite(*AlarmePin, swap(true));
+    
         }
     }
     else {
